@@ -35,6 +35,12 @@ def get_matches():
 
 
 def is_notable(match):
+    if 'State' not in match:
+        return False
+
+    if int(match['State']['State']) == 0:
+        return False
+
     if 'Config' not in match:
         return False
 
@@ -64,8 +70,8 @@ def process(text):
     print("[bot] num matches =" + str(len(matches_json)))
     for match in matches_json:
         match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (match['Config']['name'].replace("VS", "vs."), match['State']['MatchId'])
-        if 'ServerSteamID' in match['State'] and match['State']['ServerSteamID'] is not None:
-            match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
+        match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
+
     if (len(matches_json) == 0):
         match_str = "No notable teams are playing right now.\n\n"
 
