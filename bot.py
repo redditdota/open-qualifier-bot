@@ -90,6 +90,9 @@ def get_name(match):
 
 
 def process(text):
+    if START_TAG not in text or END_TAG not in text:
+        return text
+
     start = text.find(START_TAG) + len(START_TAG)
     end = text.find(END_TAG)
 
@@ -102,7 +105,7 @@ def process(text):
         match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
 
     if (len(matches_json) == 0):
-        match_str = "No notable teams are playing right now.\n\n"
+        match_str = "No other notable teams are playing right now.\n\n"
 
     return text[0:start] + "\n\n" + match_str + "\n\n" + text[end:]
 
