@@ -41,6 +41,9 @@ def is_notable(match):
     if int(match['State']['State']) == 0:
         return False
 
+    if match['State']['ServerSteamID'] is None:
+        return False
+
     if 'Config' not in match:
         return False
 
@@ -67,7 +70,7 @@ def process(text):
     match_str = ''
     matches_json = get_matches()
     matches_json = filter(lambda match: is_notable(match), matches_json)
-    print("[bot] num matches =" + str(len(matches_json)))
+    print("[bot] num matches = " + str(len(matches_json)))
     for match in matches_json:
         match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (match['Config']['name'].replace("VS", "vs."), match['State']['MatchId'])
         match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
@@ -88,7 +91,7 @@ def main():
     assert(post.author.name == USERNAME)
 
     while (True):
-        print("refreshing...")
+        print("[bot] refreshing...")
         post.refresh()
         text = post.selftext
         new_text = process(text)
