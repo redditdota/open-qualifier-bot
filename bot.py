@@ -63,6 +63,32 @@ def is_notable(match):
     return False
 
 
+def get_name(match):
+    faceit_name = match['Config']['name']
+    players = match['Config']['players']
+    radiant = filter(lambda player: player['team'] == 0, players)
+    dire = filter(lambda player: player['team'] == 1, players)
+    team1 = None
+    team2 = None
+    for player in radiant:
+        if player['steam'] in PLAYERS_TO_TEAMS:
+            team1 = PLAYERS_TO_TEAMS[player['steam']]
+            break
+
+    if team1 is None:
+        team1 = faceit_name[0: faceit_name.find("VS")]
+
+    for player in dire:
+        if player['steam'] in PLAYERS_TO_TEAMS:
+            team2 = PLAYERS_TO_TEAMS[player['steam']]
+            break
+
+    if team2 is None:
+        team2 = faceit_name[faceit_name.find("VS") + 2:]
+
+    return "%s vs. %s" % (team1, team2)
+
+
 def process(text):
     start = text.find(START_TAG) + len(START_TAG)
     end = text.find(END_TAG)
@@ -72,7 +98,7 @@ def process(text):
     matches_json = filter(lambda match: is_notable(match), matches_json)
     print("[bot] num matches = " + str(len(matches_json)))
     for match in matches_json:
-        match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (match['Config']['name'].replace("VS", "vs."), match['State']['MatchId'])
+        match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (get_name(match), match['State']['MatchId'])
         match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
 
     if (len(matches_json) == 0):
