@@ -7,8 +7,8 @@ WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
 
 REGIONS = {
    "SEA" : ["Southeast", "Asia", "SEA"],
-   "EU" : ["Europe", "EU", "NA"],
-   "NA" : ["NA", "North", "America", "EU"],
+   "EU" : ["Europe", "EU"],
+   "NA" : ["North", "America", "NA"],
    "SA" : ["SA", "South", "America"],
    "China" : ["CN", "China"],
    "CIS" : ["CIS"]
@@ -32,8 +32,7 @@ def get_oq_streams(regions):
 
     other_regions = set(REGIONS.keys())
     for r in regions:
-        if r in other_regions:
-            other_regions.remove(r)
+        other_regions.remove(r)
 
     def is_oq(stream):
         title = stream["title"]
@@ -45,9 +44,15 @@ def get_oq_streams(regions):
             if search_result is not None:
                 return False
 
+        for r in regions:
+            for b in REGIONS[r]:
+                search_result = re.search(r'\b' + b + '\W', title, re.IGNORECASE)
+                if search_result is not None:
+                    return True
+
         for other_region in other_regions:
             for b in REGIONS[other_region]:
-                search_result = re.search(r'\b' + b.lower() + '\W', title, re.IGNORECASE)
+                search_result = re.search(r'\b' + b + '\W', title, re.IGNORECASE)
                 if search_result is not None:
                     return False
 

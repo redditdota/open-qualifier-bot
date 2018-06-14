@@ -6,6 +6,7 @@ MAX_TRIES = 10
 
 
 def get_json(url, headers={}):
+    time.sleep(0.5)
     n = 0
     while n < MAX_TRIES:
         try:
