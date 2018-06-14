@@ -3,6 +3,13 @@ from tokens import *
 from watchlist import NOTABLE_BY_REGION
 
 
+def get_pros():
+    result = common.get_json("https://api.opendota.com/api/proPlayers")
+    if result is None:
+        return []
+    return map(lambda player : player["account_id"], result)
+
+PROS = set(get_pros())
 
 def _is_notable(game):
     def _is_notable_team(team):
@@ -12,6 +19,10 @@ def _is_notable(game):
         return True
     if "radiant_team" in game and _is_notable_team(game["radiant_team"]):
         return True
+    
+    for player in game.get("players", []):
+        if player["account_id"] in PROS:
+            return True
     return False
 
 
