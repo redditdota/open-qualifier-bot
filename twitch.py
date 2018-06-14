@@ -44,7 +44,6 @@ def get_oq_streams(regions):
             for b in REGIONS[other_region]:
                 search_result = re.search(r'\b' + b.lower() + '\W', title)
                 if search_result is not None:
-                    print(b.lower(), title)
                     return False
 
         for w in WHITELIST:
