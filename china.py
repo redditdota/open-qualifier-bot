@@ -7,9 +7,11 @@ def get_pros():
     result = common.get_json("https://api.opendota.com/api/proPlayers")
     if result is None:
         return []
-    return map(lambda player : player["account_id"], result)
+    return result
 
-PROS = set(get_pros())
+PROS = get_pros()
+PROS_ACCOUNT_ID = set(map(lambda player : player["account_id"], PROS))
+PROS_STEAM_ID = set(map(lambda player : player["steamid"], PROS))
 
 def _is_notable(game):
     def _is_notable_team(team):
@@ -21,7 +23,7 @@ def _is_notable(game):
         return True
     
     for player in game.get("players", []):
-        if player["account_id"] in PROS:
+        if player["account_id"] in PROS_ACCOUNT_ID:
             return True
     return False
 

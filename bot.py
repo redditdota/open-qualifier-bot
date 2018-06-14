@@ -51,6 +51,9 @@ def is_notable(match, region):
         if steam_id in NOTABLE_BY_REGION[region]:
             return True
 
+        if steam_id in china.PROS_STEAM_ID:
+            return True
+
     return False
 
 
