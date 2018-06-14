@@ -104,6 +104,10 @@ EU = {
     "76561198032135226" : "dog gaming", # Luft
     "76561198373019683" : "BackPacks", # Nikobaby
     "76561198078571029" : "BackPacks", # Attacker
+    "76561198036748162" : "Bulldog",
+    "76561197964182156" : "EGM",
+    "76561198113391383" : "Swiss Quality G", # Alexxo
+    "76561198080879620" : "Swiss Quality G", # W1sh
 }
 
 CIS = {
@@ -143,8 +147,6 @@ CIS = {
     "76561198051967271" : "Excellent Team-", # L0lik_O
     "76561198052198380" : "20 min afk lesArk", # Flow
     "76561198077687195" : "20 min afk lesArk", # SoNNeikO
-    "76561198113391383" : "Swiss Quality G", # Alexxo
-    "76561198080879620" : "Swiss Quality G", # W1sh
 }
 
 NA = {
