@@ -123,7 +123,7 @@ def main():
 
         start = text.find(START_TAG) + len(START_TAG)
         end = text.find(END_TAG)
-        match_text = ""
+        match_text = "# Live Matches\n\n"
         for region in REGIONS:
             match_text += "## " + region + "\n\n"
             match_text += get_match_text(region) + "\n\n"
