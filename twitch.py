@@ -2,7 +2,7 @@ import common
 from tokens import *
 import re
 
-BLACKLIST = ["solo"]
+BLACKLIST = ["solo", "player"]
 WHITELIST = ["qual", "ti8", "international"]
 
 REGIONS = {

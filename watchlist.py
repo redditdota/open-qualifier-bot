@@ -230,3 +230,12 @@ NOTABLE_BY_REGION = {
    "China" : China,
    "CIS" : CIS
 }
+
+REGION_ID = {
+   "SEA" : 5,
+   "EU" : -1,
+   "NA" : -1,
+   "SA" : -1,
+   "China" : -1,
+   "CIS" : 3
+}
