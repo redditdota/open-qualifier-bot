@@ -92,7 +92,7 @@ EU = {
     "76561198047648307" : "BlinkPool", # Misery
     "76561198128670224" : "Womberers", # Badplayrer
     "76561198072692644" : "Womberers", # MTD
-    "76561197997664905" : "Moriarty", # iLLusionisT 
+    "76561197997664905" : "Moriarty", # iLLusionisT
     "76561198054705495" : "Moriarty", # BliNcc
     "76561198056435719" : "NoBountyHunter", # Arise
     "76561198048985630" : "NoBountyHunter", # bone-chan
@@ -115,7 +115,7 @@ CIS = {
     "76561198047050811" : "Gambit Esports", # AfterLife
     "76561198078685044" : "HunkysFromZavod", # USH
     "76561198066204890" : "HunkysFromZavod", # KaHT
-    "76561198123678367" : "imagine hehe", # 
+    "76561198123678367" : "imagine hehe", #
     "76561198053263703" : "imagine hehe", # SORRY
     "76561198046988871" : "Mega-Lada", # Funn1k
     "76561198047068572" : "Mega-Lada", # Mag
@@ -227,5 +227,6 @@ NOTABLE_BY_REGION = {
    "EU" : EU,
    "NA" : NA,
    "SA" : SA,
-   "China" : China
+   "China" : China,
+   "CIS" : CIS
 }

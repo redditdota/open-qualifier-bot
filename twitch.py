@@ -10,7 +10,8 @@ REGIONS = {
    "EU" : ["Europe", "EU"],
    "NA" : ["NA", "North", "America"],
    "SA" : ["SA", "South", "America"],
-   "China" : ["CN", "China"]
+   "China" : ["CN", "China"],
+   "CIS" : ["CIS"]
 }
 
 def _get(uri):
