@@ -35,6 +35,6 @@ def get_text():
         text += "No live streams found. \n\n"
     else:
         for stream in streams:
-            text += "* [%d Viewers] [**%s**](%s)\n\n" % (stream["viewer_count"], stream["title"], get_link(stream["user_id"]))
+            text += "* [%d Viewers] [**%s**](%s)\n\n" % (stream["viewer_count"], stream["title"].strip(), get_link(stream["user_id"]))
     return text
 
