@@ -2,39 +2,30 @@ import sys
 import praw
 import urllib, json
 from tokens import *
-from watchlist import PLAYERS_TO_TEAMS
+from watchlist import NOTABLE_BY_REGION
 import time
+import china
+import twitch
 
 # how often to update thread
 REFRESH_RATE = 60 * 3
-
-REDDIT_API = None
 
 START_TAG = '[](#start-list-matches)'
 
 END_TAG = '[](#end-list-matches)'
 
-def setup_connection_reddit(subreddit):
-    ''' Creates a connection to the reddit API. '''
-    print('[bot] Setting up connection with reddit')
-    global REDDIT_API
-    REDDIT_API = praw.Reddit('reddit Twitter tool monitoring {}'.format(subreddit))
-    subreddit = REDDIT_API.get_subreddit(subreddit)
-    REDDIT_API.login(USERNAME, PASSWORD)
-    return subreddit
+REGION = None
 
 def get_matches():
     try:
-        faceit = urllib.urlopen(FACEIT_API)
+        with urllib.request.urlopen(FACEIT_API) as faceit:        
+            return json.loads(faceit.read().decode('utf-8'))
     except IOError as e:
         print(e)
         return []
-    matches_json = json.loads(faceit.read())
-    faceit.close()
-    return matches_json
 
 
-def is_notable(match):
+def is_notable(match, region):
     if 'State' not in match:
         return False
 
@@ -57,13 +48,13 @@ def is_notable(match):
             continue
 
         steam_id = player['steam']
-        if steam_id in PLAYERS_TO_TEAMS:
+        if steam_id in NOTABLE_BY_REGION[region]:
             return True
 
     return False
 
 
-def get_name(match):
+def get_name(match, region):
     faceit_name = match['Config']['name']
     players = match['Config']['players']
     radiant = filter(lambda player: player['team'] == 0, players)
@@ -71,16 +62,16 @@ def get_name(match):
     team1 = None
     team2 = None
     for player in radiant:
-        if player['steam'] in PLAYERS_TO_TEAMS:
-            team1 = PLAYERS_TO_TEAMS[player['steam']]
+        if player['steam'] in NOTABLE_BY_REGION[region]:
+            team1 = NOTABLE_BY_REGION[region][player['steam']]
             break
 
     if team1 is None:
         team1 = faceit_name[0: faceit_name.find("VS")]
 
     for player in dire:
-        if player['steam'] in PLAYERS_TO_TEAMS:
-            team2 = PLAYERS_TO_TEAMS[player['steam']]
+        if player['steam'] in NOTABLE_BY_REGION[region]:
+            team2 = NOTABLE_BY_REGION[region][player['steam']]
             break
 
     if team2 is None:
@@ -89,41 +80,55 @@ def get_name(match):
     return "%s vs. %s" % (team1, team2)
 
 
-def process(text):
-    if START_TAG not in text or END_TAG not in text:
-        return text
-
-    start = text.find(START_TAG) + len(START_TAG)
-    end = text.find(END_TAG)
+def get_match_text(region):
+    if region.lower() == "china":
+        return china.get_matches()
 
     match_str = ''
     matches_json = get_matches()
-    matches_json = filter(lambda match: is_notable(match), matches_json)
+    matches_json = list(filter(lambda match: is_notable(match, region), matches_json))
     print("[bot] num matches = " + str(len(matches_json)))
     for match in matches_json:
-        match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (get_name(match), match['State']['MatchId'])
+        match_str += "[**%s**](http://www.trackdota.com/matches/%s):     " % (get_name(match, region), match['State']['MatchId'])
         match_str += '`watch_server "%s"`\n\n' % match['State']['ServerSteamID'][1:-1]
 
     if (len(matches_json) == 0):
-        match_str = "No other notable teams are playing right now.\n\n"
+        match_str = "No notable teams detected in live matches.\n\n"
 
-    return text[0:start] + "\n\n" + match_str + "\n\n" + text[end:]
-
-
+    return match_str
 
 
 def main():
-    assert(len(sys.argv) == 2)
+    assert(len(sys.argv) == 3)
 
-    subreddit = setup_connection_reddit(SUBREDDIT)
-    post = REDDIT_API.get_submission(submission_id=sys.argv[1])
-    assert(post.author.name == USERNAME)
+    reddit = praw.Reddit(
+        client_id=REDDIT_CLIENT_ID,
+        client_secret=REDDIT_CLIENT_SECRET,
+        user_agent="TI8 OQ Bot",
+        username=USERNAME,
+        password=PASSWORD)
+
+    global REGIONS
+    REGIONS = sys.argv[2].split(",")
 
     while (True):
         print("[bot] refreshing...")
-        post.refresh()
+        post = reddit.submission(id=sys.argv[1])
+        assert(post.author.name.lower() == USERNAME)
         text = post.selftext
-        new_text = process(text)
+        assert(START_TAG in text and END_TAG in text)
+
+        start = text.find(START_TAG) + len(START_TAG)
+        end = text.find(END_TAG)
+        match_text = ""
+        for region in REGIONS:
+            match_text += "## " + region + "\n\n"
+            match_text += get_match_text(region) + "\n\n"
+
+        match_text += "----\n\n"
+        match_text += twitch.get_text()
+
+        new_text = text[0:start] + "\n\n" + match_text + "\n\n" + text[end:]
         post.edit(new_text)
         time.sleep(REFRESH_RATE)
 
