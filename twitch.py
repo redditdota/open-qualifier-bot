@@ -2,8 +2,8 @@ import common
 from tokens import *
 import re
 
-BLACKLIST = ["solo", "player"]
-WHITELIST = ["qual", "ti8", "international"]
+BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W"]
+WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
 
 REGIONS = {
    "SEA" : ["Southeast", "Asia", "SEA"],
@@ -36,19 +36,24 @@ def get_oq_streams(regions):
             other_regions.remove(r)
 
     def is_oq(stream):
-        title = stream["title"].lower()
+        title = stream["title"]
+        if (re.search(r'[\u0400-\u04FF]', title, re.IGNORECASE)) is not None:
+            return False
+
         for b in BLACKLIST:
-            if b.lower() in title:
+            search_result = re.search(b, title, re.IGNORECASE)
+            if search_result is not None:
                 return False
 
         for other_region in other_regions:
             for b in REGIONS[other_region]:
-                search_result = re.search(r'\b' + b.lower() + '\W', title)
+                search_result = re.search(r'\b' + b.lower() + '\W', title, re.IGNORECASE)
                 if search_result is not None:
                     return False
 
         for w in WHITELIST:
-            if w.lower() in title:
+            search_result = re.search(w, title, re.IGNORECASE)
+            if search_result is not None:
                 return True
         return False
 
