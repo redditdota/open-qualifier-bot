@@ -10,8 +10,12 @@ def get_pros():
     return result
 
 PROS = get_pros()
-PROS_ACCOUNT_ID = set(map(lambda player : player["account_id"], PROS))
-PROS_STEAM_ID = set(map(lambda player : player["steamid"], PROS))
+PROS_ACCOUNT_ID = {}
+PROS_STEAM_ID = {}
+for pro in PROS:
+    PROS_ACCOUNT_ID[pro["account_id"]] = pro["name"]
+    PROS_STEAM_ID[pro["steamid"]] = pro["name"]
+
 
 def _is_notable(game):
     def _is_notable_team(team):
@@ -22,11 +26,33 @@ def _is_notable(game):
     if "radiant_team" in game and _is_notable_team(game["radiant_team"]):
         return True
     
-    for player in game.get("players", []):
-        if player["account_id"] in PROS_ACCOUNT_ID:
+    for p in game.get("players", []):
+        if p["account_id"] in PROS_ACCOUNT_ID:
             return True
     return False
 
+def _get_name(game):
+    radiant_players = []
+    dire_players = []
+    for p in game["players"]:
+        if p["account_id"] not in PROS_ACCOUNT_ID:
+            continue
+        if p["team"] == 0:
+            radiant_players.append(PROS_ACCOUNT_ID[p["account_id"]])
+        if p["team"] == 1:
+            dire_players.append(PROS_ACCOUNT_ID[p["account_id"]])
+
+    def to_name(players):
+        if len(players) == 5:
+            return ", ".join(players)
+        else:
+            return ", ".join(players) + " +%d" % (5 - len(players))
+
+    dire = to_name(dire_players) if len(dire_players) > 0 else "Dire"
+    radiant = to_name(radiant_players) if len(radiant_players) > 0 else "Radiant"
+    dire = game.get("dire_team", {}).get("team_name", dire)
+    radiant = game.get("radiant_team", {}).get("team_name", radiant)
+    return "%s vs. %s" % (dire, radiant)
 
 def get_matches():
     uri = "https://api.steampowered.com/IDOTA2Match_570/GetLiveLeagueGames/v0001/?key=%s" % (STEAM_KEY)
@@ -37,9 +63,7 @@ def get_matches():
     match_str = ""
     for game in result["result"]["games"]:
         if int(game["league_id"]) == LEAGUE_ID and _is_notable(game):
-            dire = game.get("dire_team", {}).get("team_name", "Dire")
-            radiant = game.get("radiant_team", {}).get("team_name", "Radiant")
-            match_str += "[**%s**](http://www.trackdota.com/matches/%s) \n\n" % ("%s vs. %s" % (dire, radiant), game["match_id"])
+            match_str += "[**%s**](http://www.trackdota.com/matches/%s) \n\n" % (_get_name(game), game["match_id"])
 
     if len(match_str) == 0:
         match_str = "No notable teams detected in live matches."
