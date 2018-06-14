@@ -1,5 +1,17 @@
-import common 
+import common
 from tokens import *
+import re
+
+BLACKLIST = ["solo"]
+WHITELIST = ["qual", "ti8", "international"]
+
+REGIONS = {
+   "SEA" : ["Southeast", "Asia", "SEA"],
+   "EU" : ["Europe", "EU"],
+   "NA" : ["NA", "North", "America"],
+   "SA" : ["SA", "South", "America"],
+   "China" : ["CN", "China"]
+}
 
 def _get(uri):
     headers = {"Client-ID" : TWITCH_CLIENT_ID}
@@ -14,11 +26,31 @@ def get_streams():
         return []
     return result
 
-def get_oq_streams():
+def get_oq_streams(regions):
     streams = get_streams()
+
+    other_regions = set(REGIONS.keys())
+    for r in regions:
+        if r in other_regions:
+            other_regions.remove(r)
+
     def is_oq(stream):
         title = stream["title"].lower()
-        return "qual" in title or "ti8" in title or "international" in title
+        for b in BLACKLIST:
+            if b.lower() in title:
+                return False
+
+        for other_region in other_regions:
+            for b in REGIONS[other_region]:
+                search_result = re.search(r'\b' + b.lower() + '\W', title)
+                if search_result is not None:
+                    print(b.lower(), title)
+                    return False
+
+        for w in WHITELIST:
+            if w.lower() in title:
+                return True
+        return False
 
     return list(filter(lambda stream: is_oq(stream), streams))
 
@@ -28,8 +60,8 @@ def get_link(id):
         return None
     return "http://www.twitch.tv/" + result[0]["login"]
 
-def get_text():
-    streams = get_oq_streams()
+def get_text(regions):
+    streams = get_oq_streams(regions)
     text = "# Twitch Streams \n\n"
     if len(streams) == 0:
         text += "No live streams found. \n\n"

@@ -129,7 +129,7 @@ def main():
             match_text += get_match_text(region) + "\n\n"
 
         match_text += "----\n\n"
-        match_text += twitch.get_text()
+        match_text += twitch.get_text(REGIONS)
 
         new_text = text[0:start] + "\n\n" + match_text + "\n\n" + text[end:]
         post.edit(new_text)
