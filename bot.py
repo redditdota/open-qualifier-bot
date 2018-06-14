@@ -18,7 +18,7 @@ REGION = None
 
 def get_matches():
     try:
-        with urllib.request.urlopen(FACEIT_API) as faceit:        
+        with urllib.request.urlopen(FACEIT_API) as faceit:
             return json.loads(faceit.read().decode('utf-8'))
     except IOError as e:
         print(e)
@@ -51,8 +51,8 @@ def is_notable(match, region):
         if steam_id in NOTABLE_BY_REGION[region]:
             return True
 
-        if steam_id in china.PROS_STEAM_ID:
-            return True
+        #if steam_id in china.PROS_STEAM_ID:
+        #    return True
 
     return False
 
