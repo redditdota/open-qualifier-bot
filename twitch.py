@@ -2,16 +2,16 @@ import common
 from tokens import *
 import re
 
-BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W"]
+BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\Wrerun\W"]
 WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
 
 REGIONS = {
    "SEA" : ["Southeast", "Asia", "SEA"],
-   "EU" : ["Europe", "EU"],
+   "EU" : ["Europe", "EU", "Alliance", "Bulldog", "OG"],
    "NA" : ["North", "America", "NA"],
    "SA" : ["SA", "South", "America"],
    "China" : ["CN", "China"],
-   "CIS" : ["CIS"]
+   "CIS" : ["CIS", "Spirit"]
 }
 
 def _get(uri):
