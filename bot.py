@@ -2,7 +2,7 @@ import sys
 import praw
 import urllib, json
 from tokens import *
-from watchlist import NOTABLE_BY_REGION
+from watchlist import NOTABLE_BY_REGION,REGION_ID
 import time
 import china
 import twitch
