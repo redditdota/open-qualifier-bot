@@ -32,7 +32,7 @@ def is_notable(match, region):
     if int(match['State']['State']) == 0:
         return False
 
-    if match['State']['ServerSteamID'] is None:
+    if match['State'].get('ServerSteamID', None) is None:
         return False
 
     if 'Config' not in match:
