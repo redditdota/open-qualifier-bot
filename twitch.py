@@ -1,6 +1,9 @@
 import common
 from tokens import *
 import re
+import sys
+import praw
+import time
 
 BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\Wrerun\W"]
 WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
@@ -13,6 +16,14 @@ REGIONS = {
    "China" : ["CN", "China"],
    "CIS" : ["CIS", "Spirit", "Navi", "Na'Vi"]
 }
+
+# how often to update thread
+REFRESH_RATE = 60 * 3
+
+START_TAG = '[](#start-streams)'
+
+END_TAG = '[](#end-streams)'
+
 
 def _get(uri):
     headers = {"Client-ID" : TWITCH_CLIENT_ID}
@@ -35,8 +46,14 @@ def get_oq_streams(regions):
         other_regions.remove(r)
 
     def is_oq(stream):
+        if stream["language"] != "en":
+            return False
+
         title = stream["title"]
         if (re.search(r'[\u0400-\u04FF]', title, re.IGNORECASE)) is not None:
+            return False
+
+        if (re.search(r'[áéíñóúüÁÉÍÑÓÚÜ]', title, re.IGNORECASE)) is not None:
             return False
 
         for b in BLACKLIST:
@@ -79,4 +96,33 @@ def get_text(regions):
         for stream in streams:
             text += "* [%d Viewers] [**%s**](%s)\n\n" % (stream["viewer_count"], stream["title"].strip(), get_link(stream["user_id"]))
     return text
+
+
+def main():
+    assert(len(sys.argv) == 3)
+
+    reddit = praw.Reddit(
+        client_id=REDDIT_CLIENT_ID,
+        client_secret=REDDIT_CLIENT_SECRET,
+        user_agent="TI8 OQ Bot",
+        username=USERNAME,
+        password=PASSWORD)
+
+    regions = sys.argv[2].split(",")
+
+    while (True):
+        print("[bot] refreshing...")
+        post = reddit.submission(id=sys.argv[1])
+        assert(post.author.name.lower() == USERNAME)
+        text = post.selftext
+        assert(START_TAG in text and END_TAG in text)
+
+        start = text.find(START_TAG) + len(START_TAG)
+        end = text.find(END_TAG)
+        new_text = text[0:start] + "\n\n" + get_text(regions) + "\n\n" + text[end:]
+        post.edit(new_text)
+        time.sleep(REFRESH_RATE)
+
+if __name__ == '__main__':
+    main()
 
