@@ -14,7 +14,8 @@ PROS_ACCOUNT_ID = {}
 PROS_STEAM_ID = {}
 for pro in PROS:
     PROS_STEAM_ID[pro["steamid"]] = pro["name"]
-    if pro.get("loccountrycode", "").lower() == "cn" or pro.get("country_code", "").lower() == "cn":
+    country = pro.get("loccountrycode", pro.get("country_code", ""))
+    if country is not None and country.lower() == "cn":
         PROS_ACCOUNT_ID[pro["account_id"]] = pro["name"]
 
 
