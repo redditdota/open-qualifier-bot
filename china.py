@@ -13,8 +13,9 @@ PROS = get_pros()
 PROS_ACCOUNT_ID = {}
 PROS_STEAM_ID = {}
 for pro in PROS:
-    PROS_ACCOUNT_ID[pro["account_id"]] = pro["name"]
     PROS_STEAM_ID[pro["steamid"]] = pro["name"]
+    if pro.get("loccountrycode", "").lower() == "cn" or pro.get("country_code", "").lower() == "cn":
+        PROS_ACCOUNT_ID[pro["account_id"]] = pro["name"]
 
 
 def _is_notable(game):
@@ -25,7 +26,7 @@ def _is_notable(game):
         return True
     if "radiant_team" in game and _is_notable_team(game["radiant_team"]):
         return True
-    
+
     for p in game.get("players", []):
         if p["account_id"] in PROS_ACCOUNT_ID:
             return True

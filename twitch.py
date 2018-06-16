@@ -11,7 +11,7 @@ WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
 REGIONS = {
    "SEA" : ["Southeast", "Asia", "SEA"],
    "EU" : ["Europe", "EU", "Alliance", "Bulldog", "OG"],
-   "NA" : ["North", "America", "NA"],
+   "NA" : ["North", "America", "NA", "EG", "VGJ", "col", "complexity", "LvR"],
    "SA" : ["SA", "South", "America"],
    "China" : ["CN", "China"],
    "CIS" : ["CIS", "Spirit", "Navi", "Na'Vi"]
