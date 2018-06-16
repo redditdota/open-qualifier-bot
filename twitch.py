@@ -5,7 +5,7 @@ import sys
 import praw
 import time
 
-BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\Wrerun\W"]
+BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\brerun\W"]
 WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
 
 REGIONS = {
@@ -18,7 +18,7 @@ REGIONS = {
 }
 
 # how often to update thread
-REFRESH_RATE = 60 * 3
+REFRESH_RATE = 60 * 5
 
 START_TAG = '[](#start-streams)'
 
