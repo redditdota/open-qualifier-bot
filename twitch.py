@@ -6,11 +6,11 @@ import praw
 import time
 
 BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\brerun\W"]
-WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W"]
+WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W", r"\bdreamleague\W"]
 
-REGIONS = {
+REGION_KEYWORDS = {
    "SEA" : ["Southeast", "Asia", "SEA"],
-   "EU" : ["Europe", "EU", "Alliance", "Bulldog", "OG"],
+   "EU" : ["Europe", "EU", "Alliance", "Bulldog", "OG", "Secret", "OG", "Nigma"],
    "NA" : ["North", "America", "NA", "EG", "VGJ", "col", "complexity", "LvR"],
    "SA" : ["SA", "South", "America"],
    "China" : ["CN", "China"],
@@ -38,12 +38,8 @@ def get_streams():
         return []
     return result
 
-def get_oq_streams(regions):
+def get_oq_streams():
     streams = get_streams()
-
-    other_regions = set(REGIONS.keys())
-    for r in regions:
-        other_regions.remove(r)
 
     def is_oq(stream):
         if stream["language"] != "en":
@@ -61,17 +57,11 @@ def get_oq_streams(regions):
             if search_result is not None:
                 return False
 
-        for r in regions:
-            for b in REGIONS[r]:
+        for r in REGION_KEYWORDS:
+            for b in REGION_KEYWORDS[r]:
                 search_result = re.search(r'\b' + b + '\W', title, re.IGNORECASE)
                 if search_result is not None:
                     return True
-
-        for other_region in other_regions:
-            for b in REGIONS[other_region]:
-                search_result = re.search(r'\b' + b + '\W', title, re.IGNORECASE)
-                if search_result is not None:
-                    return False
 
         for w in WHITELIST:
             search_result = re.search(w, title, re.IGNORECASE)
@@ -87,8 +77,10 @@ def get_link(id):
         return None
     return "http://www.twitch.tv/" + result[0]["login"]
 
-def get_text(regions):
-    streams = get_oq_streams(regions)
+def get_text():
+    streams = get_oq_streams()
+    print("num streams =", len(streams))
+
     text = "# Twitch Streams \n\n"
     if len(streams) == 0:
         text += "No live streams found. \n\n"
@@ -108,8 +100,6 @@ def main():
         username=USERNAME,
         password=PASSWORD)
 
-    regions = sys.argv[2].split(",")
-
     while (True):
         print("[bot] refreshing...")
         post = reddit.submission(id=sys.argv[1])
@@ -119,7 +109,7 @@ def main():
 
         start = text.find(START_TAG) + len(START_TAG)
         end = text.find(END_TAG)
-        new_text = text[0:start] + "\n\n" + get_text(regions) + "\n\n" + text[end:]
+        new_text = text[0:start] + "\n\n" + get_text() + "\n\n" + text[end:]
         post.edit(new_text)
         time.sleep(REFRESH_RATE)
 
