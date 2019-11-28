@@ -1,6 +1,7 @@
 import sys
 import praw
-import urllib, json
+import requests
+
 from tokens import *
 from watchlist import NOTABLE_BY_REGION,REGION_ID
 import time
@@ -18,8 +19,7 @@ REGION = None
 
 def get_matches():
     try:
-        with urllib.request.urlopen(FACEIT_API) as faceit:
-            return json.loads(faceit.read().decode('utf-8'))
+        return requests.get(FACEIT_API).json()
     except IOError as e:
         print(e)
         return []
