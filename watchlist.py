@@ -108,6 +108,8 @@ EU = {
     "76561197964182156" : "EGM",
     "76561198113391383" : "Swiss Quality G", # Alexxo
     "76561198080879620" : "Swiss Quality G", # W1sh
+    "76561197972496930" : "compLexity Gaming", # Limmp
+    "76561198011094390" : "compLexity Gaming", # ZFreek
 }
 
 CIS = {
@@ -150,8 +152,6 @@ CIS = {
 }
 
 NA = {
-    "76561197972496930" : "compLexity Gaming", # Limmp
-    "76561198011094390" : "compLexity Gaming", # ZFreek
     "76561198047011640" : "Evil Geniuses", # rtz
     "76561198071885769" : "Evil Geniuses", # Sumail
     "76561198046309613" : "FeelsNuggetMan", # Dragonfist
