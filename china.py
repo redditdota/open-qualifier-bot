@@ -41,13 +41,11 @@ class China():
         for p in game["players"]:
             if p["account_id"] not in self.chinese_pros:
                 continue
-            print(p["account_id"], self.chinese_pros[p["account_id"]])
             if p["team"] == 0:
                 radiant_players.append(self.chinese_pros[p["account_id"]])
             if p["team"] == 1:
                 dire_players.append(self.chinese_pros[p["account_id"]])
 
-        print(dire_players, radiant_players)
         dire = self._get_name_helper(dire_players) if len(dire_players) > 0 else "Dire"
         radiant = self._get_name_helper(radiant_players) if len(radiant_players) > 0 else "Radiant"
 
