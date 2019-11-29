@@ -5,7 +5,7 @@ import sys
 import praw
 import time
 
-BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\brerun\W"]
+BLACKLIST = [r"\bsolo\W", r"\bplayer\W", r"\WRU\W", r"\WRUS\W", r"\WFR\W", r"\WUA\W", r"\WFIL\W", r"\brerun\W", r"\bMMR\W", r"\brank\W"]
 WHITELIST = [r"\bquals\W", r"\bqualifier*", r"\bti8\W", r"\binternational\W", r"\bdreamleague\W"]
 
 REGION_KEYWORDS = {

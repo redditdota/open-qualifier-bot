@@ -3,6 +3,7 @@ import common
 
 OPENDOTA_PROS = "https://api.opendota.com/api/proPlayers"
 LIVE_GAMES = "https://api.steampowered.com/IDOTA2Match_570/GetLiveLeagueGames/v0001/?key=%s" % STEAM_KEY
+THRESHOLD = 10
 
 class China():
 
@@ -26,11 +27,11 @@ class China():
                 return True
         return False
 
-    def _get_name_helper(players):
+    def _get_name_helper(self, players):
         if len(players) == 5:
             return ", ".join(players)
         else:
-            return ", ".join(players) + " +%d" % (5 - len(players))
+            return ", ".join(players) + "+%d" % (5 - len(players))
 
 
     def _get_name(self, game):
@@ -40,13 +41,15 @@ class China():
         for p in game["players"]:
             if p["account_id"] not in self.chinese_pros:
                 continue
+            print(p["account_id"], self.chinese_pros[p["account_id"]])
             if p["team"] == 0:
                 radiant_players.append(self.chinese_pros[p["account_id"]])
             if p["team"] == 1:
                 dire_players.append(self.chinese_pros[p["account_id"]])
 
-        dire = _get_name_helper(dire_players) if len(dire_players) > 0 else "Dire"
-        radiant = _get_name_helper(radiant_players) if len(radiant_players) > 0 else "Radiant"
+        print(dire_players, radiant_players)
+        dire = self._get_name_helper(dire_players) if len(dire_players) > 0 else "Dire"
+        radiant = self._get_name_helper(radiant_players) if len(radiant_players) > 0 else "Radiant"
 
         dire = game.get("dire_team", {}).get("team_name", dire)
         radiant = game.get("radiant_team", {}).get("team_name", radiant)
@@ -60,8 +63,11 @@ class China():
             return ""
 
         match_str = ""
-        for game in result["result"]["games"]:
-            if int(game["league_id"]) == LEAGUE_ID and self._is_notable(game):
+        live_games = [game for game in result["result"]["games"] if int(game["league_id"]) == LEAGUE_ID]
+        print("found {} games".format(len(live_games)))
+
+        for game in live_games:
+            if len(live_games) < THRESHOLD or self._is_notable(game):
                 match_str += "[**%s**](http://www.trackdota.com/matches/%s) \n\n" % (self._get_name(game), game["match_id"])
 
         return match_str
